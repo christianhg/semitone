@@ -1,5 +1,6 @@
 {
   "name": "semitone",
+  "version": "0.1.0",
   "type": "module",
   "source": "src/semitone.ts",
   "exports": "./dist/semitone.modern.js",
