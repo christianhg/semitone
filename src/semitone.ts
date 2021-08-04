@@ -3,17 +3,23 @@ export function getScale(note: Note, scaleName: ScaleName): Scale {
 
   let scale: Scale = [note, note, note, note, note, note, note, note];
 
-  let currentNoteIndex = noteIndexesMap.get(note)!;
+  let [currentNote, currentAccidental] = splitNote(note);
+  let [nextNote, nextNoteOffset] = noteProgression.get(currentNote)!;
 
   for (let index = 0; index < interval.length; index++) {
     const step = interval[index];
-    const stepLength = step === "H" ? 1 : 2;
-    const [note] = noteIndexes.find(
-      ([_, index]) => index === currentNoteIndex + stepLength
+
+    const accidental = offsetToAccidental.get(
+      accidentalToOffset.get(currentAccidental)! +
+        scaleStepToOffset.get(step)! -
+        scaleStepToOffset.get(nextNoteOffset)!
     )!;
 
-    currentNoteIndex = currentNoteIndex + stepLength;
-    scale[index + 1] = note;
+    scale[index + 1] = `${nextNote}${accidental}`;
+
+    currentNote = nextNote;
+    currentAccidental = accidental;
+    [nextNote, nextNoteOffset] = noteProgression.get(currentNote)!;
   }
 
   return scale;
@@ -36,7 +42,16 @@ type Augmented = typeof symbols.augmented;
 type Diminished = typeof symbols.diminished;
 type DoubleFlat = typeof symbols.doubleFlat;
 type DoubleSharp = typeof symbols.doubleSharp;
-export type Note = `${NaturalNote}${"" | Flat | Sharp}`;
+type Accidental = Flat | Sharp | DoubleFlat | DoubleSharp | "";
+export type Note = `${NaturalNote}${Accidental}`;
+
+function splitNote(note: Note): [NaturalNote, Accidental] {
+  const [naturalNote, accidental = ""] = note.split("") as [
+    NaturalNote,
+    Accidental
+  ];
+  return [naturalNote, accidental];
+}
 
 type ScaleStep = "W" | "H";
 type ScaleInterval = [
@@ -55,68 +70,33 @@ const scaleIntervals = new Map<ScaleName, ScaleInterval>([
   ["major", ["W", "W", "H", "W", "W", "W", "H"]],
 ]);
 
-const noteIndexesMap = new Map<Note, number>([
-  ["C", 0],
-  ["B♯", 0],
-  ["C♯", 1],
-  ["D♭", 1],
-  ["D", 2],
-  ["D♯", 3],
-  ["E♭", 3],
-  ["E", 4],
-  ["F♭", 4],
-  ["F", 5],
-  ["F♯", 6],
-  ["G♭", 6],
-  ["G", 7],
-  ["G♯", 8],
-  ["A♭", 8],
-  ["A", 9],
-  ["A♯", 10],
-  ["B♭", 10],
-  ["B", 11],
-  ["C♭", 11],
+const noteProgression = new Map<NaturalNote, [NaturalNote, ScaleStep]>([
+  ["C", ["D", "W"]],
+  ["D", ["E", "W"]],
+  ["E", ["F", "H"]],
+  ["F", ["G", "W"]],
+  ["G", ["A", "W"]],
+  ["A", ["B", "W"]],
+  ["B", ["C", "H"]],
 ]);
 
-const noteIndexes: [Note, number][] = [
-  ["C", 0],
-  ["B♯", 0],
-  ["C♯", 1],
-  ["D♭", 1],
-  ["D", 2],
-  ["D♯", 3],
-  ["E♭", 3],
-  ["E", 4],
-  ["F♭", 4],
-  ["F", 5],
-  ["F♯", 6],
-  ["G♭", 6],
-  ["G", 7],
-  ["G♯", 8],
-  ["A♭", 8],
-  ["A", 9],
-  ["A♯", 10],
-  ["B♭", 10],
-  ["B", 11],
-  ["C♭", 11],
-  ["C", 12],
-  ["B♯", 12],
-  ["C♯", 13],
-  ["D♭", 13],
-  ["D", 14],
-  ["D♯", 15],
-  ["E♭", 15],
-  ["E", 16],
-  ["F♭", 16],
-  ["F", 17],
-  ["F♯", 18],
-  ["G♭", 18],
-  ["G", 19],
-  ["G♯", 20],
-  ["A♭", 20],
-  ["A", 21],
-  ["A♯", 22],
-  ["B", 23],
-  ["B♭", 23],
-  ["C♭", 23],
-];
+const accidentalToOffset = new Map<Accidental, number>([
+  ["𝄫", -2],
+  ["♭", -1],
+  ["", 0],
+  ["♯", 1],
+  ["𝄪", 2],
+]);
+
+const offsetToAccidental = new Map<number, Accidental>([
+  [-2, "𝄫"],
+  [-1, "♭"],
+  [0, ""],
+  [1, "♯"],
+  [2, "𝄪"],
+]);
+
+const scaleStepToOffset = new Map<ScaleStep, 1 | 2>([
+  ["H", 1],
+  ["W", 2],
+]);
