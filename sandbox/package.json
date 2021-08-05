@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "live-server ."
+  },
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "semitone": "../"
+  }
+}
