@@ -4,7 +4,9 @@
     "dev": "live-server ."
   },
   "devDependencies": {
-    "live-server": "^1.2.1",
-    "semitone": "../"
+    "live-server": "^1.2.1"
+  },
+  "dependencies": {
+    "semitone": "^0.1.1"
   }
 }
