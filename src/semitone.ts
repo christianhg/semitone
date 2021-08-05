@@ -25,8 +25,8 @@ export function getScale(note: Note, scaleName: ScaleName): Scale {
   return scale;
 }
 
-const symbols = {
-  naturalNotes: ["A", "B", "C", "D", "E", "F", "G"] as const,
+export const symbols = {
+  naturalNotes: ["C", "D", "E", "F", "G", "A", "B"] as const,
   flat: "♭" as const,
   sharp: "♯" as const,
   augmented: "+" as const,
@@ -63,9 +63,10 @@ type ScaleInterval = [
   ScaleStep,
   ScaleStep
 ];
-type ScaleName = "major";
 export type Scale = [Note, Note, Note, Note, Note, Note, Note, Note];
 
+export const scaleNames = ["major"] as const;
+type ScaleName = typeof scaleNames[number];
 const scaleIntervals = new Map<ScaleName, ScaleInterval>([
   ["major", ["W", "W", "H", "W", "W", "W", "H"]],
 ]);
