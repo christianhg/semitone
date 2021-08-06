@@ -8,6 +8,7 @@
   "main": "./dist/semitone.cjs",
   "module": "./dist/semitone.module.js",
   "unpkg": "./dist/semitone.umd.js",
+  "types": "./dist/semitone.d.ts",
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle watch",
