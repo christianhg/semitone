@@ -1,10 +1,35 @@
-export function getScale(note: Note, scaleName: ScaleName | ScaleAlias): Scale {
+type Scale = {
+  name: ScaleName;
+  alias?: ScaleAlias;
+  interval: ScaleInterval;
+  progressions: ScaleNotes[];
+};
+
+export function getScale(scaleName: ScaleName | ScaleAlias): Scale {
   const name = isScaleAlias(scaleName)
     ? scaleAliasToName.get(scaleName)!
     : scaleName;
   const interval = scaleIntervals.get(name)!;
 
-  let scale: Scale = [note, note, note, note, note, note, note, note];
+  return {
+    name,
+    alias: scaleNameToAlias.get(name),
+    interval,
+    progressions: symbols.naturalNotes
+      .map((note) => [
+        getNoteProgressions(`${note}${symbols.flat}`, interval),
+        getNoteProgressions(`${note}`, interval),
+        getNoteProgressions(`${note}${symbols.sharp}`, interval),
+      ])
+      .flat(),
+  };
+}
+
+export function getNoteProgressions(
+  note: Note,
+  interval: ScaleInterval
+): ScaleNotes {
+  let scale: ScaleNotes = [note, note, note, note, note, note, note, note];
 
   let [currentNote, currentAccidental] = splitNote(note);
   let [nextNote, nextNoteOffset] = noteProgression.get(currentNote)!;
@@ -66,7 +91,7 @@ type ScaleInterval = [
   ScaleStep,
   ScaleStep
 ];
-export type Scale = [Note, Note, Note, Note, Note, Note, Note, Note];
+export type ScaleNotes = [Note, Note, Note, Note, Note, Note, Note, Note];
 
 export const scaleNames = [
   "ionian",
@@ -88,12 +113,16 @@ function isScaleAlias(
 type ScaleName = typeof scaleNames[number];
 type ScaleAlias = typeof scaleAliases[number];
 
-export const scaleAliasToName = new Map<ScaleAlias, ScaleName>([
+const scaleAliasToName = new Map<ScaleAlias, ScaleName>([
   ["major", "ionian"],
   ["natural-minor", "aeolian"],
 ]);
+const scaleNameToAlias = new Map<ScaleName, ScaleAlias>([
+  ["ionian", "major"],
+  ["aeolian", "natural-minor"],
+]);
 
-const scaleIntervals = new Map<ScaleName, ScaleInterval>([
+export const scaleIntervals = new Map<ScaleName, ScaleInterval>([
   ["ionian", ["W", "W", "H", "W", "W", "W", "H"]],
   ["dorian", ["W", "H", "W", "W", "W", "H", "W"]],
   ["phrygian", ["H", "W", "W", "W", "H", "W", "W"]],

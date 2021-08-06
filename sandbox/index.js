@@ -1,23 +1,21 @@
-import { getScale, symbols } from "./semitone.module.js";
+import { scaleNames, getScale } from "./semitone.module.js";
 
-function generateScales(scaleName) {
-  const majorScales = symbols.naturalNotes
-    .map((naturalNote) => [
-      getScale(`${naturalNote}${symbols.flat}`, scaleName),
-      getScale(naturalNote, scaleName),
-      getScale(`${naturalNote}${symbols.sharp}`, scaleName),
-    ])
-    .flat()
-    .map((scale) => scale.join(" – "));
+const root = document.getElementById("root");
 
-  const majorScalesList = document.getElementById(`${scaleName}Scales`);
-
-  majorScales.forEach((scale) => {
+scaleNames.forEach((scaleName) => {
+  const scale = getScale(scaleName);
+  const scaleContainer = document.createElement("div");
+  root.appendChild(scaleContainer);
+  const scaleHeading = document.createElement("h2");
+  scaleHeading.textContent = scale.alias
+    ? `${scale.name} (${scale.alias})`
+    : scale.name;
+  scaleContainer.appendChild(scaleHeading);
+  const list = document.createElement("ul");
+  scaleContainer.appendChild(list);
+  scale.progressions.forEach((progression) => {
     const li = document.createElement("li");
-    li.textContent = scale;
-    majorScalesList.appendChild(li);
+    li.textContent = progression.join(" – ");
+    list.appendChild(li);
   });
-}
-
-generateScales("major");
-generateScales("natural-minor");
+});

@@ -1,7 +1,7 @@
-import { getScale, Scale } from "./semitone";
+import { getNoteProgressions, ScaleNotes, scaleIntervals } from "./semitone";
 
-test(getScale.name, () => {
-  const majorScales: Scale[] = [
+test(getNoteProgressions.name, () => {
+  const majorScales: ScaleNotes[] = [
     ["C", "D", "E", "F", "G", "A", "B", "C"],
     ["D", "E", "F♯", "G", "A", "B", "C♯", "D"],
     ["E", "F♯", "G♯", "A", "B", "C♯", "D♯", "E"],
@@ -12,6 +12,8 @@ test(getScale.name, () => {
   ];
 
   majorScales.forEach((majorScale) => {
-    expect(getScale(majorScale[0], "major")).toEqual(majorScale);
+    expect(
+      getNoteProgressions(majorScale[0], scaleIntervals.get("ionian")!)
+    ).toEqual(majorScale);
   });
 });
