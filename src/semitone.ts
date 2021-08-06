@@ -1,5 +1,8 @@
-export function getScale(note: Note, scaleName: ScaleName): Scale {
-  const interval = scaleIntervals.get(scaleName)!;
+export function getScale(note: Note, scaleName: ScaleName | ScaleAlias): Scale {
+  const name = isScaleAlias(scaleName)
+    ? scaleAliasToName.get(scaleName)!
+    : scaleName;
+  const interval = scaleIntervals.get(name)!;
 
   let scale: Scale = [note, note, note, note, note, note, note, note];
 
@@ -65,11 +68,39 @@ type ScaleInterval = [
 ];
 export type Scale = [Note, Note, Note, Note, Note, Note, Note, Note];
 
-export const scaleNames = ["major", "natural-minor"] as const;
+export const scaleNames = [
+  "ionian",
+  "dorian",
+  "phrygian",
+  "lydian",
+  "mixolydian",
+  "aeolian",
+  "locrian",
+] as const;
+export const scaleAliases = ["major", "natural-minor"] as const;
+
+function isScaleAlias(
+  scaleName: ScaleAlias | ScaleName
+): scaleName is ScaleAlias {
+  return scaleAliases.includes(scaleName as any);
+}
+
 type ScaleName = typeof scaleNames[number];
+type ScaleAlias = typeof scaleAliases[number];
+
+export const scaleAliasToName = new Map<ScaleAlias, ScaleName>([
+  ["major", "ionian"],
+  ["natural-minor", "aeolian"],
+]);
+
 const scaleIntervals = new Map<ScaleName, ScaleInterval>([
-  ["major", ["W", "W", "H", "W", "W", "W", "H"]],
-  ["natural-minor", ["W", "H", "W", "W", "H", "W", "W"]],
+  ["ionian", ["W", "W", "H", "W", "W", "W", "H"]],
+  ["dorian", ["W", "H", "W", "W", "W", "H", "W"]],
+  ["phrygian", ["H", "W", "W", "W", "H", "W", "W"]],
+  ["lydian", ["W", "W", "W", "H", "W", "H", "W"]],
+  ["mixolydian", ["W", "W", "H", "W", "W", "H", "W"]],
+  ["aeolian", ["W", "H", "W", "W", "H", "W", "W"]],
+  ["locrian", ["H", "W", "W", "H", "W", "W", "W"]],
 ]);
 
 const noteProgression = new Map<NaturalNote, [NaturalNote, ScaleStep]>([
