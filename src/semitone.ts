@@ -65,10 +65,11 @@ type ScaleInterval = [
 ];
 export type Scale = [Note, Note, Note, Note, Note, Note, Note, Note];
 
-export const scaleNames = ["major"] as const;
+export const scaleNames = ["major", "natural-minor"] as const;
 type ScaleName = typeof scaleNames[number];
 const scaleIntervals = new Map<ScaleName, ScaleInterval>([
   ["major", ["W", "W", "H", "W", "W", "W", "H"]],
+  ["natural-minor", ["W", "H", "W", "W", "H", "W", "W"]],
 ]);
 
 const noteProgression = new Map<NaturalNote, [NaturalNote, ScaleStep]>([
