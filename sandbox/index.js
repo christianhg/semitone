@@ -1,7 +1,4 @@
-import {
-  getScale,
-  symbols,
-} from "./node_modules/semitone/dist/semitone.module.js";
+import { getScale, symbols } from "./semitone.module.js";
 
 const majorScales = symbols.naturalNotes
   .map((naturalNote) => [
