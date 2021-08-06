@@ -14,7 +14,7 @@
     "dev": "microbundle watch",
     "test": "jest",
     "prettier": "prettier --write .",
-    "setup-sandbox": "npm run build && cp ./dist/semitone.module.js ./sandbox/"
+    "setup-sandbox": "npm run build && cp ./dist/semitone.module.js ./sandbox/ && cp ./dist/semitone.module.js.map ./sandbox/"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
