@@ -7,13 +7,13 @@ type Scale = {
 
 export function getScale(scaleName: ScaleName | ScaleAlias): Scale {
   const name = isScaleAlias(scaleName)
-    ? scaleAliasToName.get(scaleName)!
+    ? scaleAliasToName[scaleName]
     : scaleName;
-  const interval = scaleIntervals.get(name)!;
+  const interval = scaleIntervals[name];
 
   return {
     name,
-    alias: scaleNameToAlias.get(name),
+    alias: scaleNameToAlias[name],
     interval,
     progressions: symbols.naturalNotes
       .map((note) => [
@@ -32,22 +32,23 @@ export function getNoteProgressions(
   let scale: ScaleNotes = [note, note, note, note, note, note, note, note];
 
   let [currentNote, currentAccidental] = splitNote(note);
-  let [nextNote, nextNoteOffset] = noteProgression.get(currentNote)!;
+  let [nextNote, nextNoteOffset] = noteProgression[currentNote];
 
   for (let index = 0; index < interval.length; index++) {
     const step = interval[index];
 
-    const accidental = offsetToAccidental.get(
-      accidentalToOffset.get(currentAccidental)! +
-        scaleStepToOffset.get(step)! -
-        scaleStepToOffset.get(nextNoteOffset)!
-    )!;
+    const offset =
+      accidentalToOffset[currentAccidental] +
+      scaleStepToOffset[step] -
+      scaleStepToOffset[nextNoteOffset];
+
+    const accidental = offsetToAccidental.get(offset)!;
 
     scale[index + 1] = `${nextNote}${accidental}`;
 
     currentNote = nextNote;
     currentAccidental = accidental;
-    [nextNote, nextNoteOffset] = noteProgression.get(currentNote)!;
+    [nextNote, nextNoteOffset] = noteProgression[currentNote];
   }
 
   return scale;
@@ -113,42 +114,48 @@ function isScaleAlias(
 type ScaleName = typeof scaleNames[number];
 type ScaleAlias = typeof scaleAliases[number];
 
-const scaleAliasToName = new Map<ScaleAlias, ScaleName>([
-  ["major", "ionian"],
-  ["natural-minor", "aeolian"],
-]);
-const scaleNameToAlias = new Map<ScaleName, ScaleAlias>([
-  ["ionian", "major"],
-  ["aeolian", "natural-minor"],
-]);
+const scaleAliasToName: Record<ScaleAlias, ScaleName> = {
+  major: "ionian",
+  "natural-minor": "aeolian",
+} as const;
 
-export const scaleIntervals = new Map<ScaleName, ScaleInterval>([
-  ["ionian", ["W", "W", "H", "W", "W", "W", "H"]],
-  ["dorian", ["W", "H", "W", "W", "W", "H", "W"]],
-  ["phrygian", ["H", "W", "W", "W", "H", "W", "W"]],
-  ["lydian", ["W", "W", "W", "H", "W", "H", "W"]],
-  ["mixolydian", ["W", "W", "H", "W", "W", "H", "W"]],
-  ["aeolian", ["W", "H", "W", "W", "H", "W", "W"]],
-  ["locrian", ["H", "W", "W", "H", "W", "W", "W"]],
-]);
+const scaleNameToAlias: Record<ScaleName, ScaleAlias | undefined> = {
+  ionian: "major",
+  dorian: undefined,
+  phrygian: undefined,
+  lydian: undefined,
+  mixolydian: undefined,
+  aeolian: "natural-minor",
+  locrian: undefined,
+} as const;
 
-const noteProgression = new Map<NaturalNote, [NaturalNote, ScaleStep]>([
-  ["C", ["D", "W"]],
-  ["D", ["E", "W"]],
-  ["E", ["F", "H"]],
-  ["F", ["G", "W"]],
-  ["G", ["A", "W"]],
-  ["A", ["B", "W"]],
-  ["B", ["C", "H"]],
-]);
+export const scaleIntervals: Record<ScaleName, ScaleInterval> = {
+  ionian: ["W", "W", "H", "W", "W", "W", "H"],
+  dorian: ["W", "H", "W", "W", "W", "H", "W"],
+  phrygian: ["H", "W", "W", "W", "H", "W", "W"],
+  lydian: ["W", "W", "W", "H", "W", "H", "W"],
+  mixolydian: ["W", "W", "H", "W", "W", "H", "W"],
+  aeolian: ["W", "H", "W", "W", "H", "W", "W"],
+  locrian: ["H", "W", "W", "H", "W", "W", "W"],
+};
 
-const accidentalToOffset = new Map<Accidental, number>([
-  ["𝄫", -2],
-  ["♭", -1],
-  ["", 0],
-  ["♯", 1],
-  ["𝄪", 2],
-]);
+const noteProgression: Record<NaturalNote, [NaturalNote, ScaleStep]> = {
+  C: ["D", "W"],
+  D: ["E", "W"],
+  E: ["F", "H"],
+  F: ["G", "W"],
+  G: ["A", "W"],
+  A: ["B", "W"],
+  B: ["C", "H"],
+};
+
+const accidentalToOffset: Record<Accidental, -2 | -1 | 0 | 1 | 2> = {
+  "𝄫": -2,
+  "♭": -1,
+  "": 0,
+  "♯": 1,
+  "𝄪": 2,
+} as const;
 
 const offsetToAccidental = new Map<number, Accidental>([
   [-2, "𝄫"],
@@ -158,7 +165,7 @@ const offsetToAccidental = new Map<number, Accidental>([
   [2, "𝄪"],
 ]);
 
-const scaleStepToOffset = new Map<ScaleStep, 1 | 2>([
-  ["H", 1],
-  ["W", 2],
-]);
+const scaleStepToOffset: Record<ScaleStep, 1 | 2> = {
+  H: 1,
+  W: 2,
+} as const;

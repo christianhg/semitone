@@ -13,7 +13,7 @@ test(getNoteProgressions.name, () => {
 
   majorScales.forEach((majorScale) => {
     expect(
-      getNoteProgressions(majorScale[0], scaleIntervals.get("ionian")!)
+      getNoteProgressions(majorScale[0], scaleIntervals["ionian"])
     ).toEqual(majorScale);
   });
 });
