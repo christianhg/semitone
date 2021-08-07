@@ -2,7 +2,6 @@ type Scale = {
   name: ScaleName;
   alias?: ScaleAlias;
   interval: ScaleInterval;
-  progressions: ScaleNotes[];
 };
 
 export function getScale(scaleName: ScaleName | ScaleAlias): Scale {
@@ -15,13 +14,6 @@ export function getScale(scaleName: ScaleName | ScaleAlias): Scale {
     name,
     alias: scaleNameToAlias[name],
     interval,
-    progressions: symbols.naturalNotes
-      .map((note) => [
-        getNoteProgressions(`${note}${symbols.flat}`, interval),
-        getNoteProgressions(`${note}`, interval),
-        getNoteProgressions(`${note}${symbols.sharp}`, interval),
-      ])
-      .flat(),
   };
 }
 
