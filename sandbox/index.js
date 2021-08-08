@@ -2,10 +2,40 @@ import {
   scaleNames,
   getScale,
   symbols,
+  getChord,
   getNoteProgressions,
 } from "./semitone.module.js";
 
 const root = document.getElementById("root");
+
+const chordsContainer = document.createElement("div");
+const chordsHeading = document.createElement("h2");
+chordsHeading.textContent = "Chords (Triads)";
+const list = document.createElement("ul");
+
+symbols.naturalNotes
+  .map((note) => [
+    `${note}${symbols.flat}`,
+    `${note}`,
+    `${note}${symbols.sharp}`,
+  ])
+  .flat()
+  .map((note) => [
+    `${note}`,
+    `${note}${symbols.minor}`,
+    `${note}${symbols.diminished}`,
+    `${note}${symbols.augmented}`,
+  ])
+  .flat()
+  .map((note) => {
+    const li = document.createElement("li");
+    li.textContent = `${note}: ${getChord(note).join(" – ")}`;
+    list.appendChild(li);
+  });
+
+chordsContainer.appendChild(chordsHeading);
+chordsContainer.appendChild(list);
+root.appendChild(chordsContainer);
 
 scaleNames.forEach((scaleName) => {
   const scale = getScale(scaleName);

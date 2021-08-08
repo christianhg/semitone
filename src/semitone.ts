@@ -1,3 +1,73 @@
+export type Chord = [Note, Note, Note];
+export type ChordAbbreviation = `${NaturalNote}${ChordQuality}`;
+type ChordQuality = "" | Minor | Augmented | Diminished;
+type SeventhChordQuality = "maj7" | "7" | "m7" | "dim7" | "⦰7";
+
+export function getChord(chordAbbreviation: ChordAbbreviation): Chord {
+  const list = chordAbbreviation.split("");
+  const note = isNaturalNote(list[0]) ? list[0] : undefined;
+
+  if (!note) {
+    throw new Error(`Unknown chord: ${chordAbbreviation}`);
+  }
+  list.shift();
+
+  const accidental = isAccidental(list[0]) ? list[0] : "";
+
+  if (accidental) {
+    list.shift();
+  }
+
+  const possibleQuality = list.join("");
+
+  const quality = isChordQuality(possibleQuality) ? possibleQuality : "";
+
+  const [root, , third, , fifth] = getNoteProgressions(
+    `${note}${accidental}`,
+    scaleIntervals.ionian
+  );
+
+  return quality === "m"
+    ? [root, lowerPitch(third), fifth]
+    : quality === "dim"
+    ? [root, lowerPitch(third), lowerPitch(fifth)]
+    : quality === "aug"
+    ? [root, third, heightenPitch(fifth)]
+    : [root, third, fifth];
+}
+
+function lowerPitch(note: Note): Note {
+  const [root, accidental] = splitNote(note);
+
+  return `${root}${
+    accidental === "𝄪"
+      ? "♯"
+      : accidental === "♯"
+      ? ""
+      : accidental === ""
+      ? "♭"
+      : accidental === "♭"
+      ? "𝄫"
+      : ""
+  }`;
+}
+
+function heightenPitch(note: Note): Note {
+  const [root, accidental] = splitNote(note);
+
+  return `${root}${
+    accidental === "𝄫"
+      ? "♭"
+      : accidental === "♭"
+      ? ""
+      : accidental === ""
+      ? "♯"
+      : accidental === "♯"
+      ? "𝄪"
+      : ""
+  }`;
+}
+
 type Scale = {
   name: ScaleName;
   alias?: ScaleAlias;
@@ -50,10 +120,11 @@ export const symbols = {
   naturalNotes: ["C", "D", "E", "F", "G", "A", "B"] as const,
   flat: "♭" as const,
   sharp: "♯" as const,
-  augmented: "+" as const,
-  diminished: "o" as const,
+  augmented: "aug" as const,
+  diminished: "dim" as const,
   doubleFlat: "𝄫" as const,
   doubleSharp: "𝄪" as const,
+  minor: "m" as const,
 };
 
 type NaturalNote = typeof symbols.naturalNotes[number];
@@ -63,8 +134,30 @@ type Augmented = typeof symbols.augmented;
 type Diminished = typeof symbols.diminished;
 type DoubleFlat = typeof symbols.doubleFlat;
 type DoubleSharp = typeof symbols.doubleSharp;
+type Minor = typeof symbols.minor;
 type Accidental = Flat | Sharp | DoubleFlat | DoubleSharp | "";
 export type Note = `${NaturalNote}${Accidental}`;
+
+function isNaturalNote(string: string): string is NaturalNote {
+  return symbols.naturalNotes.includes(string as any);
+}
+
+function isAccidental(string: string): string is Accidental {
+  return (
+    string === symbols.doubleFlat ||
+    string === symbols.flat ||
+    string === symbols.sharp ||
+    string === symbols.doubleSharp
+  );
+}
+
+function isChordQuality(string: string): string is ChordQuality {
+  return (
+    string === symbols.minor ||
+    string === symbols.diminished ||
+    string === symbols.augmented
+  );
+}
 
 function splitNote(note: Note): [NaturalNote, Accidental] {
   const [naturalNote, accidental = ""] = note.split("") as [
