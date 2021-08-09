@@ -1,11 +1,6 @@
-import {
-  getNoteProgressions,
-  ScaleNotes,
-  scaleIntervals,
-  getChord,
-  ChordAbbreviation,
-  Chord,
-} from "./semitone";
+import { getNoteProgressions } from "./progression";
+import { scaleIntervals, ScaleNotes } from "./scale";
+import { getChord, ChordAbbreviation, Chord } from "./semitone";
 
 test(getChord.name, () => {
   const chords = new Map<ChordAbbreviation, Chord>([
