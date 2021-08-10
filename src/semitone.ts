@@ -1,7 +1,7 @@
-import { Accidental, isAccidental } from "./accidental";
+import { isSimpleAccidental, SimpleAccidental } from "./accidental";
 import { heightenPitch, lowerPitch, Note } from "./note";
 import { getNoteProgressions } from "./progression";
-import {getScale, scaleIntervals, scaleNames } from "./scale";
+import { getScale, scaleIntervals, scaleNames } from "./scale";
 import {
   Augmented,
   Diminished,
@@ -11,10 +11,12 @@ import {
   symbols,
 } from "./symbols";
 
-export { getNoteProgressions, getScale, scaleNames, symbols }
+export { getNoteProgressions, getScale, scaleNames, symbols };
 
 export type Chord = [Note, Note, Note];
-export type ChordAbbreviation = `${NaturalNote}${ChordQuality}`;
+export type ChordAbbreviation = `${NaturalNote}${
+  | SimpleAccidental
+  | ""}${ChordQuality}`;
 type ChordQuality = "" | Minor | Augmented | Diminished;
 type SeventhChordQuality = "maj7" | "7" | "m7" | "dim7" | "⦰7";
 
@@ -30,7 +32,7 @@ export function getChord(
   const { note, accidental, quality } = parsedChord;
 
   const [root, , third, , fifth] = getNoteProgressions(
-    `${note}${accidental}`,
+    `${note}${accidental ?? ""}`,
     scaleIntervals.ionian
   );
 
@@ -45,31 +47,41 @@ export function getChord(
 
 type ParsedChordAbbreviation = {
   note: NaturalNote;
-  accidental: Accidental;
-  quality: ChordQuality;
+  accidental?: SimpleAccidental;
+  quality?: ChordQuality;
 };
 
 function parseChordAbbreviation(
   chordAbbreviation: ChordAbbreviation
 ): ParsedChordAbbreviation | undefined {
-  const list = chordAbbreviation.split("");
-  const note = isNaturalNote(list[0]) ? list[0] : undefined;
+  let note: NaturalNote | undefined;
+  let accidental: SimpleAccidental | undefined;
+  let quality: ChordQuality | undefined;
+
+  let currentChars: string = "";
+
+  for (const char of chordAbbreviation) {
+    currentChars = currentChars + char;
+
+    if (!note && isNaturalNote(currentChars)) {
+      note = currentChars;
+      currentChars = "";
+    }
+
+    if (!accidental && isSimpleAccidental(currentChars)) {
+      accidental = currentChars;
+      currentChars = "";
+    }
+
+    if (!quality && isChordQuality(currentChars)) {
+      quality = currentChars;
+      currentChars = "";
+    }
+  }
 
   if (!note) {
     return;
   }
-
-  list.shift();
-
-  const accidental = isAccidental(list[0]) ? list[0] : "";
-
-  if (accidental) {
-    list.shift();
-  }
-
-  const possibleQuality = list.join("");
-
-  const quality = isChordQuality(possibleQuality) ? possibleQuality : "";
 
   return {
     note,
