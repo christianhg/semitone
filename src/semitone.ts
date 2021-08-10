@@ -14,10 +14,10 @@ import {
 export { getNoteProgressions, getScale, scaleNames, symbols };
 
 export type Chord = [Note, Note, Note];
-export type ChordAbbreviation = `${NaturalNote}${
-  | SimpleAccidental
-  | ""}${ChordQuality}`;
-type ChordQuality = "" | Minor | Augmented | Diminished;
+export type ChordAbbreviation = `${NaturalNote}${SimpleAccidental | ""}${
+  | ChordQuality
+  | ""}`;
+type ChordQuality = Minor | Augmented | Diminished;
 type SeventhChordQuality = "maj7" | "7" | "m7" | "dim7" | "⦰7";
 
 export function getChord(
