@@ -4,32 +4,28 @@ import {
   symbols,
   getChord,
   getNoteProgressions,
-} from "./semitone.module.js";
+} from './semitone.module.js';
 
-const root = document.getElementById("root");
+const root = document.getElementById('root');
 
-const chordsContainer = document.createElement("div");
-const chordsHeading = document.createElement("h2");
-chordsHeading.textContent = "Chords (Triads)";
-const list = document.createElement("ul");
+const chordsContainer = document.createElement('div');
+const chordsHeading = document.createElement('h2');
+chordsHeading.textContent = 'Chords (Triads)';
+const list = document.createElement('ul');
 
 symbols.naturalNotes
-  .map((note) => [
-    `${note}${symbols.flat}`,
-    `${note}`,
-    `${note}${symbols.sharp}`,
-  ])
+  .map(note => [`${note}${symbols.flat}`, `${note}`, `${note}${symbols.sharp}`])
   .flat()
-  .map((note) => [
+  .map(note => [
     `${note}`,
     `${note}${symbols.minor}`,
     `${note}${symbols.diminished}`,
     `${note}${symbols.augmented}`,
   ])
   .flat()
-  .map((note) => {
-    const li = document.createElement("li");
-    li.textContent = `${note}: ${getChord(note).join(" – ")}`;
+  .map(note => {
+    const li = document.createElement('li');
+    li.textContent = `${note}: ${getChord(note).join(' – ')}`;
     list.appendChild(li);
   });
 
@@ -37,27 +33,27 @@ chordsContainer.appendChild(chordsHeading);
 chordsContainer.appendChild(list);
 root.appendChild(chordsContainer);
 
-scaleNames.forEach((scaleName) => {
+scaleNames.forEach(scaleName => {
   const scale = getScale(scaleName);
 
-  const scaleContainer = document.createElement("div");
-  const scaleHeading = document.createElement("h2");
-  const list = document.createElement("ul");
+  const scaleContainer = document.createElement('div');
+  const scaleHeading = document.createElement('h2');
+  const list = document.createElement('ul');
 
   scaleHeading.textContent = scale.alias
     ? `${scale.name} (${scale.alias})`
     : scale.name;
 
   symbols.naturalNotes
-    .map((note) => [
+    .map(note => [
       getNoteProgressions(`${note}${symbols.flat}`, scale.interval),
       getNoteProgressions(`${note}`, scale.interval),
       getNoteProgressions(`${note}${symbols.sharp}`, scale.interval),
     ])
     .flat()
-    .forEach((progression) => {
-      const li = document.createElement("li");
-      li.textContent = progression.join(" – ");
+    .forEach(progression => {
+      const li = document.createElement('li');
+      li.textContent = progression.join(' – ');
       list.appendChild(li);
     });
 

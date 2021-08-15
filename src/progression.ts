@@ -1,16 +1,16 @@
-import { accidentalToOffset, offsetToAccidental } from "./accidental";
-import { Note, splitNote } from "./note";
+import { accidentalToOffset, offsetToAccidental } from './accidental';
+import { Note, splitNote } from './note';
 import {
   ScaleInterval,
   ScaleNotes,
   ScaleStep,
   scaleStepToOffset,
-} from "./scale";
-import { NaturalNote } from "./symbols";
+} from './scale';
+import { NaturalNote } from './symbols';
 
 export function getNoteProgressions(
   note: Note,
-  interval: ScaleInterval
+  interval: ScaleInterval,
 ): ScaleNotes {
   let scale: ScaleNotes = [note, note, note, note, note, note, note, note];
 
@@ -38,11 +38,11 @@ export function getNoteProgressions(
 }
 
 const noteProgression: Record<NaturalNote, [NaturalNote, ScaleStep]> = {
-  C: ["D", "W"],
-  D: ["E", "W"],
-  E: ["F", "H"],
-  F: ["G", "W"],
-  G: ["A", "W"],
-  A: ["B", "W"],
-  B: ["C", "H"],
+  C: ['D', 'W'],
+  D: ['E', 'W'],
+  E: ['F', 'H'],
+  F: ['G', 'W'],
+  G: ['A', 'W'],
+  A: ['B', 'W'],
+  B: ['C', 'H'],
 };

@@ -1,7 +1,7 @@
-import { isSimpleAccidental, SimpleAccidental } from "./accidental";
-import { heightenPitch, lowerPitch, Note } from "./note";
-import { getNoteProgressions } from "./progression";
-import { getScale, scaleIntervals, scaleNames } from "./scale";
+import { isSimpleAccidental, SimpleAccidental } from './accidental';
+import { heightenPitch, lowerPitch, Note } from './note';
+import { getNoteProgressions } from './progression';
+import { getScale, scaleIntervals, scaleNames } from './scale';
 import {
   Augmented,
   Diminished,
@@ -9,19 +9,19 @@ import {
   Minor,
   NaturalNote,
   symbols,
-} from "./symbols";
+} from './symbols';
 
 export { getNoteProgressions, getScale, scaleNames, symbols };
 
 export type Chord = [Note, Note, Note];
-export type ChordAbbreviation = `${NaturalNote}${SimpleAccidental | ""}${
+export type ChordAbbreviation = `${NaturalNote}${SimpleAccidental | ''}${
   | ChordQuality
-  | ""}`;
+  | ''}`;
 type ChordQuality = Minor | Augmented | Diminished;
-type SeventhChordQuality = "maj7" | "7" | "m7" | "dim7" | "⦰7";
+type SeventhChordQuality = 'maj7' | '7' | 'm7' | 'dim7' | '⦰7';
 
 export function getChord(
-  chordAbbreviation: ChordAbbreviation
+  chordAbbreviation: ChordAbbreviation,
 ): Chord | undefined {
   const parsedChord = parseChordAbbreviation(chordAbbreviation);
 
@@ -32,15 +32,15 @@ export function getChord(
   const { note, accidental, quality } = parsedChord;
 
   const [root, , third, , fifth] = getNoteProgressions(
-    `${note}${accidental ?? ""}`,
-    scaleIntervals.ionian
+    `${note}${accidental ?? ''}`,
+    scaleIntervals.ionian,
   );
 
-  return quality === "m"
+  return quality === 'm'
     ? [root, lowerPitch(third), fifth]
-    : quality === "dim"
+    : quality === 'dim'
     ? [root, lowerPitch(third), lowerPitch(fifth)]
-    : quality === "aug"
+    : quality === 'aug'
     ? [root, third, heightenPitch(fifth)]
     : [root, third, fifth];
 }
@@ -52,30 +52,30 @@ type ParsedChordAbbreviation = {
 };
 
 function parseChordAbbreviation(
-  chordAbbreviation: ChordAbbreviation
+  chordAbbreviation: ChordAbbreviation,
 ): ParsedChordAbbreviation | undefined {
   let note: NaturalNote | undefined;
   let accidental: SimpleAccidental | undefined;
   let quality: ChordQuality | undefined;
 
-  let currentChars: string = "";
+  let currentChars: string = '';
 
   for (const char of chordAbbreviation) {
     currentChars = currentChars + char;
 
     if (!note && isNaturalNote(currentChars)) {
       note = currentChars;
-      currentChars = "";
+      currentChars = '';
     }
 
     if (!accidental && isSimpleAccidental(currentChars)) {
       accidental = currentChars;
-      currentChars = "";
+      currentChars = '';
     }
 
     if (!quality && isChordQuality(currentChars)) {
       quality = currentChars;
-      currentChars = "";
+      currentChars = '';
     }
   }
 

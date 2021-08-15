@@ -31,3 +31,7 @@ npm test
 - Diminished: <sup>`o`</sup>
 - Double-flat: `𝄫`
 - Double-sharp: `𝄪`
+
+### Resources
+
+- http://openmusictheory.com/triads.html
