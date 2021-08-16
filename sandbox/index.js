@@ -10,7 +10,7 @@ const root = document.getElementById('root');
 
 const chordsContainer = document.createElement('div');
 const chordsHeading = document.createElement('h2');
-chordsHeading.textContent = 'Chords (Triads)';
+chordsHeading.textContent = 'Chords';
 const list = document.createElement('ul');
 
 symbols.naturalNotes
@@ -21,6 +21,11 @@ symbols.naturalNotes
     `${note}${symbols.minor}`,
     `${note}${symbols.diminished}`,
     `${note}${symbols.augmented}`,
+    `${note}${symbols.major}${symbols.seventh}`,
+    `${note}${symbols.seventh}`,
+    `${note}${symbols.minor}${symbols.seventh}`,
+    `${note}${symbols.diminished}${symbols.seventh}`,
+    `${note}${symbols.halfDiminished}${symbols.seventh}`,
   ])
   .flat()
   .map(note => {
