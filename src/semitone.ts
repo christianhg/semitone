@@ -5,20 +5,31 @@ import { getScale, scaleIntervals, scaleNames } from './scale';
 import {
   Augmented,
   Diminished,
+  HalfDiminished,
   isNaturalNote,
+  Major,
   Minor,
   NaturalNote,
+  Seventh,
   symbols,
 } from './symbols';
 
 export { getNoteProgressions, getScale, scaleNames, symbols };
 
-export type Chord = [Note, Note, Note];
+export type Chord =
+  | [root: Note, third: Note, fifth: Note]
+  | [root: Note, third: Note, fifth: Note, seventh: Note];
 export type ChordAbbreviation = `${NaturalNote}${SimpleAccidental | ''}${
   | ChordQuality
+  | SeventhChordQuality
   | ''}`;
 type ChordQuality = Minor | Augmented | Diminished;
-type SeventhChordQuality = 'maj7' | '7' | 'm7' | 'dim7' | '⦰7';
+type SeventhChordQuality =
+  | `${Major}${Seventh}`
+  | `${Seventh}`
+  | `${Minor}${Seventh}`
+  | `${Diminished}${Seventh}`
+  | `${HalfDiminished}${Seventh}`;
 
 export function getChord(
   chordAbbreviation: ChordAbbreviation,
@@ -31,7 +42,7 @@ export function getChord(
 
   const { note, accidental, quality } = parsedChord;
 
-  const [root, , third, , fifth] = getNoteProgressions(
+  const [root, , third, , fifth, , seventh] = getNoteProgressions(
     `${note}${accidental ?? ''}`,
     scaleIntervals.ionian,
   );
@@ -42,13 +53,28 @@ export function getChord(
     ? [root, lowerPitch(third), lowerPitch(fifth)]
     : quality === 'aug'
     ? [root, third, heightenPitch(fifth)]
+    : quality === 'maj7'
+    ? [root, third, fifth, seventh]
+    : quality === '7'
+    ? [root, third, fifth, lowerPitch(seventh)]
+    : quality === 'm7'
+    ? [root, lowerPitch(third), fifth, lowerPitch(seventh)]
+    : quality === 'dim7'
+    ? [
+        root,
+        lowerPitch(third),
+        lowerPitch(fifth),
+        lowerPitch(lowerPitch(seventh)),
+      ]
+    : quality === '⦰7'
+    ? [root, lowerPitch(third), lowerPitch(fifth), lowerPitch(seventh)]
     : [root, third, fifth];
 }
 
 type ParsedChordAbbreviation = {
   note: NaturalNote;
   accidental?: SimpleAccidental;
-  quality?: ChordQuality;
+  quality?: ChordQuality | SeventhChordQuality;
 };
 
 function parseChordAbbreviation(
@@ -56,7 +82,7 @@ function parseChordAbbreviation(
 ): ParsedChordAbbreviation | undefined {
   let note: NaturalNote | undefined;
   let accidental: SimpleAccidental | undefined;
-  let quality: ChordQuality | undefined;
+  let quality: ChordQuality | SeventhChordQuality | undefined;
 
   let currentChars: string = '';
 
@@ -72,11 +98,10 @@ function parseChordAbbreviation(
       accidental = currentChars;
       currentChars = '';
     }
+  }
 
-    if (!quality && isChordQuality(currentChars)) {
-      quality = currentChars;
-      currentChars = '';
-    }
+  if (isSeventhChordQuality(currentChars) || isChordQuality(currentChars)) {
+    quality = currentChars;
   }
 
   if (!note) {
@@ -95,5 +120,15 @@ function isChordQuality(string: string): string is ChordQuality {
     string === symbols.minor ||
     string === symbols.diminished ||
     string === symbols.augmented
+  );
+}
+
+function isSeventhChordQuality(string: string): string is SeventhChordQuality {
+  return (
+    string === `${symbols.major}${symbols.seventh}` ||
+    string === symbols.seventh ||
+    string === `${symbols.minor}${symbols.seventh}` ||
+    string === `${symbols.diminished}${symbols.seventh}` ||
+    string === `${symbols.halfDiminished}${symbols.seventh}`
   );
 }
