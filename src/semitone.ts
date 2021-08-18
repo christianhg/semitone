@@ -5,12 +5,15 @@ import { getScale, scaleIntervals, scaleNames } from './scale';
 import {
   Augmented,
   Diminished,
+  Fourth,
   HalfDiminished,
   isNaturalNote,
   Major,
   Minor,
   NaturalNote,
+  Second,
   Seventh,
+  Suspended,
   symbols,
 } from './symbols';
 
@@ -22,6 +25,7 @@ export type Chord =
 export type ChordAbbreviation = `${NaturalNote}${SimpleAccidental | ''}${
   | ChordQuality
   | SeventhChordQuality
+  | ChordSuspension
   | ''}`;
 type ChordQuality = Minor | Augmented | Diminished;
 type SeventhChordQuality =
@@ -30,6 +34,7 @@ type SeventhChordQuality =
   | `${Minor}${Seventh}`
   | `${Diminished}${Seventh}`
   | `${HalfDiminished}${Seventh}`;
+type ChordSuspension = `${Suspended}${Second | Fourth}`;
 
 export function getChord(
   chordAbbreviation: ChordAbbreviation,
@@ -40,9 +45,9 @@ export function getChord(
     return undefined;
   }
 
-  const { note, accidental, quality } = parsedChord;
+  const { note, accidental, quality, suspension } = parsedChord;
 
-  const [root, , third, , fifth, , seventh] = getNoteProgressions(
+  const [root, second, third, fourth, fifth, , seventh] = getNoteProgressions(
     `${note}${accidental ?? ''}`,
     scaleIntervals.ionian,
   );
@@ -68,6 +73,10 @@ export function getChord(
       ]
     : quality === '⦰7'
     ? [root, lowerPitch(third), lowerPitch(fifth), lowerPitch(seventh)]
+    : suspension === 'sus2'
+    ? [root, second, fifth]
+    : suspension === 'sus4'
+    ? [root, fourth, fifth]
     : [root, third, fifth];
 }
 
@@ -75,6 +84,7 @@ type ParsedChordAbbreviation = {
   note: NaturalNote;
   accidental?: SimpleAccidental;
   quality?: ChordQuality | SeventhChordQuality;
+  suspension?: ChordSuspension;
 };
 
 function parseChordAbbreviation(
@@ -83,6 +93,7 @@ function parseChordAbbreviation(
   let note: NaturalNote | undefined;
   let accidental: SimpleAccidental | undefined;
   let quality: ChordQuality | SeventhChordQuality | undefined;
+  let suspension: ChordSuspension | undefined;
 
   let currentChars: string = '';
 
@@ -102,6 +113,12 @@ function parseChordAbbreviation(
 
   if (isSeventhChordQuality(currentChars) || isChordQuality(currentChars)) {
     quality = currentChars;
+    currentChars = '';
+  }
+
+  if (isChordSuspension(currentChars)) {
+    suspension = currentChars;
+    currentChars = '';
   }
 
   if (!note) {
@@ -112,6 +129,7 @@ function parseChordAbbreviation(
     note,
     accidental,
     quality,
+    suspension,
   };
 }
 
@@ -130,5 +148,12 @@ function isSeventhChordQuality(string: string): string is SeventhChordQuality {
     string === `${symbols.minor}${symbols.seventh}` ||
     string === `${symbols.diminished}${symbols.seventh}` ||
     string === `${symbols.halfDiminished}${symbols.seventh}`
+  );
+}
+
+function isChordSuspension(string: string): string is ChordSuspension {
+  return (
+    string === `${symbols.suspended}${symbols.second}` ||
+    string === `${symbols.suspended}${symbols.fourth}`
   );
 }

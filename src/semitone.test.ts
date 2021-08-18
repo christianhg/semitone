@@ -18,6 +18,8 @@ test(getChord.name, () => {
     ['Fm7', ['F', 'A♭', 'C', 'E♭']],
     ['Fdim7', ['F', 'A♭', 'C♭', 'E𝄫']],
     ['F⦰7', ['F', 'A♭', 'C♭', 'E♭']],
+    ['Csus2', ['C', 'D', 'G']],
+    ['Csus4', ['C', 'F', 'G']],
   ]);
 
   [...chords.entries()].forEach(([abbreviation, chord]) => {

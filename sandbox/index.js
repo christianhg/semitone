@@ -26,6 +26,8 @@ symbols.naturalNotes
     `${note}${symbols.minor}${symbols.seventh}`,
     `${note}${symbols.diminished}${symbols.seventh}`,
     `${note}${symbols.halfDiminished}${symbols.seventh}`,
+    `${note}${symbols.suspended}${symbols.second}`,
+    `${note}${symbols.suspended}${symbols.fourth}`,
   ])
   .flat()
   .map(note => {
