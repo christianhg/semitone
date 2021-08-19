@@ -13,6 +13,7 @@ export const symbols = {
   suspended: 'sus' as const,
   second: '2' as const,
   fourth: '4' as const,
+  sixth: '6' as const,
 };
 
 export type NaturalNote = typeof symbols.naturalNotes[number];
@@ -28,6 +29,7 @@ export type Minor = typeof symbols.minor;
 export type Seventh = typeof symbols.seventh;
 export type Second = typeof symbols.second;
 export type Fourth = typeof symbols.fourth;
+export type Sixth = typeof symbols.sixth;
 export type Suspended = typeof symbols.suspended;
 
 export function isNaturalNote(string: string): string is NaturalNote {
