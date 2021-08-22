@@ -1,22 +1,9 @@
 import { isSimpleAccidental, SimpleAccidental } from './accidental';
 import { heightenPitch, lowerPitch, Note } from './note';
 import { getNoteProgressions } from './progression';
+import { ChordQuality, isChordQuality } from './quality';
 import { getScale, scaleIntervals, scaleNames } from './scale';
-import {
-  Augmented,
-  Diminished,
-  Fourth,
-  HalfDiminished,
-  isNaturalNote,
-  Major,
-  Minor,
-  NaturalNote,
-  Second,
-  Seventh,
-  Sixth,
-  Suspended,
-  symbols,
-} from './symbols';
+import { isNaturalNote, NaturalNote, symbols } from './symbols';
 
 export { getNoteProgressions, getScale, scaleNames, symbols };
 
@@ -25,21 +12,7 @@ export type Chord =
   | [root: Note, third: Note, fifth: Note, seventh: Note];
 export type ChordAbbreviation = `${NaturalNote}${SimpleAccidental | ''}${
   | ChordQuality
-  | SixthChordQuality
-  | SeventhChordQuality
-  | ChordSuspension
   | ''}`;
-type ChordQuality = Minor | Augmented | Diminished;
-type SixthChordQuality = Sixth;
-type SeventhChordQuality =
-  | `${Major}${Seventh}`
-  | `${Seventh}`
-  | `${Minor}${Seventh}`
-  | `${Diminished}${Seventh}`
-  | `${Augmented}${Seventh}`
-  | `${HalfDiminished}${Seventh}`
-  | `${Seventh}${Suspended}`;
-type ChordSuspension = `${Suspended}${Second | Fourth}`;
 
 export function getChord(
   chordAbbreviation: ChordAbbreviation,
@@ -50,7 +23,7 @@ export function getChord(
     return undefined;
   }
 
-  const { note, accidental, quality, suspension } = parsedChord;
+  const { note, accidental, quality } = parsedChord;
 
   const [root, second, third, fourth, fifth, sixth, seventh] =
     getNoteProgressions(`${note}${accidental ?? ''}`, scaleIntervals.ionian);
@@ -82,9 +55,9 @@ export function getChord(
     ? [root, third, heightenPitch(fifth), lowerPitch(seventh)]
     : quality === '⦰7'
     ? [root, lowerPitch(third), lowerPitch(fifth), lowerPitch(seventh)]
-    : suspension === 'sus2'
+    : quality === 'sus2'
     ? [root, second, fifth]
-    : suspension === 'sus4'
+    : quality === 'sus4'
     ? [root, fourth, fifth]
     : [root, third, fifth];
 }
@@ -92,8 +65,7 @@ export function getChord(
 type ParsedChordAbbreviation = {
   note: NaturalNote;
   accidental?: SimpleAccidental;
-  quality?: ChordQuality | SixthChordQuality | SeventhChordQuality;
-  suspension?: ChordSuspension;
+  quality?: ChordQuality;
 };
 
 function parseChordAbbreviation(
@@ -101,12 +73,7 @@ function parseChordAbbreviation(
 ): ParsedChordAbbreviation | undefined {
   let note: NaturalNote | undefined;
   let accidental: SimpleAccidental | undefined;
-  let quality:
-    | ChordQuality
-    | SixthChordQuality
-    | SeventhChordQuality
-    | undefined;
-  let suspension: ChordSuspension | undefined;
+  let quality: ChordQuality | undefined;
 
   let currentChars: string = '';
 
@@ -124,59 +91,17 @@ function parseChordAbbreviation(
     }
   }
 
-  if (
-    isSeventhChordQuality(currentChars) ||
-    isSixthChordQuality(currentChars) ||
-    isChordQuality(currentChars)
-  ) {
-    quality = currentChars;
-    currentChars = '';
-  }
-
-  if (isChordSuspension(currentChars)) {
-    suspension = currentChars;
-    currentChars = '';
-  }
-
   if (!note) {
     return;
+  }
+
+  if (isChordQuality(currentChars)) {
+    quality = currentChars;
   }
 
   return {
     note,
     accidental,
     quality,
-    suspension,
   };
-}
-
-function isChordQuality(string: string): string is ChordQuality {
-  return (
-    string === symbols.minor ||
-    string === symbols.diminished ||
-    string === symbols.augmented
-  );
-}
-
-function isSixthChordQuality(string: string): string is SixthChordQuality {
-  return string === symbols.sixth;
-}
-
-function isSeventhChordQuality(string: string): string is SeventhChordQuality {
-  return (
-    string === `${symbols.major}${symbols.seventh}` ||
-    string === symbols.seventh ||
-    string === `${symbols.minor}${symbols.seventh}` ||
-    string === `${symbols.diminished}${symbols.seventh}` ||
-    string === `${symbols.augmented}${symbols.seventh}` ||
-    string === `${symbols.halfDiminished}${symbols.seventh}` ||
-    string === `${symbols.seventh}${symbols.suspended}`
-  );
-}
-
-function isChordSuspension(string: string): string is ChordSuspension {
-  return (
-    string === `${symbols.suspended}${symbols.second}` ||
-    string === `${symbols.suspended}${symbols.fourth}`
-  );
 }
