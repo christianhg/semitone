@@ -1,3 +1,4 @@
+import { ChordFactor } from './factor';
 import {
   Augmented,
   Diminished,
@@ -26,32 +27,59 @@ export type ChordQuality =
   | `${Seventh}${Suspended}`
   | `${Suspended}${Second | Fourth}`;
 
-type Operation =
-  | `lowered-${'third' | 'fifth' | 'seventh'}`
-  | 'raised-fifth'
-  | `added-${'second' | 'fourth' | 'sixth' | 'seventh'}`
-  | `removed-third`;
+export type OperationType = 'lowered' | 'raised' | 'added' | 'removed';
+export type Operation = [OperationType, ChordFactor];
 
 export const qualityOperations: Record<ChordQuality, Operation[]> = {
-  m: ['lowered-third'],
-  dim: ['lowered-third', 'lowered-fifth'],
-  aug: ['raised-fifth'],
-  '6': ['added-sixth'],
-  maj7: ['added-seventh'],
-  '7': ['added-seventh', 'lowered-seventh'],
-  '7sus': ['removed-third', 'added-fourth', 'added-seventh', 'lowered-seventh'],
-  m7: ['lowered-third', 'added-seventh', 'lowered-seventh'],
-  dim7: [
-    'lowered-third',
-    'lowered-fifth',
-    'added-seventh',
-    'lowered-seventh',
-    'lowered-seventh',
+  m: [['lowered', 'third']],
+  dim: [
+    ['lowered', 'third'],
+    ['lowered', 'fifth'],
   ],
-  aug7: ['raised-fifth', 'added-seventh', 'lowered-seventh'],
-  '⦰7': ['lowered-third', 'lowered-fifth', 'added-seventh', 'lowered-seventh'],
-  sus2: ['removed-third', 'added-second'],
-  sus4: ['removed-third', 'added-fourth'],
+  aug: [['raised', 'fifth']],
+  '6': [['added', 'sixth']],
+  maj7: [['added', 'seventh']],
+  '7': [
+    ['added', 'seventh'],
+    ['lowered', 'seventh'],
+  ],
+  '7sus': [
+    ['removed', 'third'],
+    ['added', 'fourth'],
+    ['added', 'seventh'],
+    ['lowered', 'seventh'],
+  ],
+  m7: [
+    ['lowered', 'third'],
+    ['added', 'seventh'],
+    ['lowered', 'seventh'],
+  ],
+  dim7: [
+    ['lowered', 'third'],
+    ['lowered', 'fifth'],
+    ['added', 'seventh'],
+    ['lowered', 'seventh'],
+    ['lowered', 'seventh'],
+  ],
+  aug7: [
+    ['raised', 'fifth'],
+    ['added', 'seventh'],
+    ['lowered', 'seventh'],
+  ],
+  '⦰7': [
+    ['lowered', 'third'],
+    ['lowered', 'fifth'],
+    ['added', 'seventh'],
+    ['lowered', 'seventh'],
+  ],
+  sus2: [
+    ['removed', 'third'],
+    ['added', 'second'],
+  ],
+  sus4: [
+    ['removed', 'third'],
+    ['added', 'fourth'],
+  ],
 };
 
 export function isChordQuality(string: string): string is ChordQuality {

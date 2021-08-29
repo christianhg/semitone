@@ -1,7 +1,13 @@
 import { isSimpleAccidental, SimpleAccidental } from './accidental';
+import { ChordFactor } from './factor';
 import { heightenPitch, lowerPitch, Note } from './note';
 import { getNoteProgressions } from './progression';
-import { ChordQuality, isChordQuality, qualityOperations } from './quality';
+import {
+  ChordQuality,
+  isChordQuality,
+  Operation,
+  qualityOperations,
+} from './quality';
 import { getScale, scaleIntervals, scaleNames } from './scale';
 import { isNaturalNote, NaturalNote, symbols } from './symbols';
 
@@ -13,15 +19,6 @@ export type Chord =
 export type ChordAbbreviation = `${NaturalNote}${SimpleAccidental | ''}${
   | ChordQuality
   | ''}`;
-
-type ChordFactor =
-  | 'root'
-  | 'second'
-  | 'third'
-  | 'fourth'
-  | 'fifth'
-  | 'sixth'
-  | 'seventh';
 
 export function getChord(
   chordAbbreviation: ChordAbbreviation,
@@ -37,51 +34,53 @@ export function getChord(
   const [root, second, third, fourth, fifth, sixth, seventh] =
     getNoteProgressions(`${note}${accidental ?? ''}`, scaleIntervals.ionian);
 
+  const defaultNotes: Record<ChordFactor, Note> = {
+    root,
+    second,
+    third,
+    fourth,
+    fifth,
+    sixth,
+    seventh,
+  };
+
   const operations = quality ? qualityOperations[quality] : [];
 
+  const defaultOperations: Operation[] = [
+    ['added', 'root'],
+    ['added', 'third'],
+    ['added', 'fifth'],
+  ];
+
   const chordFactors: Record<ChordFactor, Note | undefined> = {
-    root,
+    root: undefined,
     second: undefined,
-    third,
+    third: undefined,
     fourth: undefined,
-    fifth,
+    fifth: undefined,
     sixth: undefined,
     seventh: undefined,
   };
 
-  operations.forEach(operation => {
-    if (operation === 'added-second') {
-      chordFactors.second = second;
-    }
-    if (operation === 'added-fourth') {
-      chordFactors.fourth = fourth;
-    }
-    if (operation === 'added-sixth') {
-      chordFactors.sixth = sixth;
-    }
-    if (operation === 'added-seventh') {
-      chordFactors.seventh = seventh;
-    }
-    if (operation === 'removed-third') {
-      chordFactors.third = undefined;
-    }
-    if (operation === 'raised-fifth') {
-      chordFactors.fifth = heightenPitch(chordFactors.fifth!);
-    }
-    if (operation === 'lowered-third') {
-      chordFactors.third = lowerPitch(chordFactors.third!);
-    }
-    if (operation === 'lowered-fifth') {
-      chordFactors.fifth = lowerPitch(chordFactors.fifth!);
-    }
-    if (operation === 'lowered-seventh') {
-      chordFactors.seventh = lowerPitch(chordFactors.seventh!);
+  [...defaultOperations, ...operations].forEach(([type, factor]) => {
+    const note = chordFactors[factor];
+
+    if (type === 'added') {
+      chordFactors[factor] = defaultNotes[factor];
+    } else if (type === 'removed') {
+      chordFactors[factor] = undefined;
+    } else if (type === 'lowered') {
+      chordFactors[factor] = note
+        ? lowerPitch(note)
+        : lowerPitch(defaultNotes[factor]);
+    } else if (type === 'raised') {
+      chordFactors[factor] = note
+        ? heightenPitch(note)
+        : heightenPitch(defaultNotes[factor]);
     }
   });
 
-  return Object.values(chordFactors).filter(
-    chordFactor => chordFactor,
-  ) as Chord;
+  return Object.values(chordFactors).filter(note => note) as Chord;
 }
 
 type ParsedChordAbbreviation = {
