@@ -4,7 +4,7 @@ import {
   symbols,
   getChord,
   getNoteProgressions,
-} from './node_modules/semitone/dist/semitone.js';
+} from 'semitone';
 
 const root = document.getElementById('root');
 

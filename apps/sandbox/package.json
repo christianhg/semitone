@@ -2,10 +2,10 @@
   "name": "sandbox",
   "private": true,
   "scripts": {
-    "dev": "live-server ."
+    "dev": "vite"
   },
   "devDependencies": {
-    "live-server": "^1.2.1"
+    "vite": "^2.9.9"
   },
   "dependencies": {
     "semitone": "workspace:^0.2.1"
