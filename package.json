@@ -12,16 +12,15 @@
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle watch",
-    "test": "jest",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "prettier": "prettier --write .",
     "setup-sandbox": "npm run build && cp ./dist/semitone.module.js ./sandbox/ && cp ./dist/semitone.module.js.map ./sandbox/"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "jest": "^27.1.0",
     "microbundle": "^0.13.3",
     "prettier": "^2.3.2",
-    "ts-jest": "^27.0.5",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "vitest": "^0.13.1"
   }
 }
