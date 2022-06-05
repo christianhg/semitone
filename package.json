@@ -9,9 +9,10 @@
   "scripts": {
     "build": "tsup src/semitone.ts --format esm,cjs --dts --minify --sourcemap",
     "dev": "tsup src/semitone --format esm,cjs --watch",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "prettier": "prettier --write .",
     "type-check": "tsc --pretty --noEmit",
     "type-check:watch": "tsc --pretty --noEmit --watch",
     "setup-sandbox": "npm run build && cp ./dist/semitone.js ./sandbox/ && cp ./dist/semitone.js.map ./sandbox/"
