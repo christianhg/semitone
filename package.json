@@ -15,9 +15,9 @@
     "setup-sandbox": "npm run build && cp ./dist/semitone.js ./sandbox/ && cp ./dist/semitone.js.map ./sandbox/"
   },
   "devDependencies": {
-    "prettier": "^2.3.2",
+    "prettier": "^2.6.2",
     "tsup": "^6.0.1",
-    "typescript": "^4.4.2",
+    "typescript": "^4.7.3",
     "vitest": "^0.13.1"
   }
 }
