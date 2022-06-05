@@ -5,19 +5,19 @@
 ### Install
 
 ```
-npm ci
+pnpm install
 ```
 
 ### Build
 
 ```
-npm run build
+pnpm build
 ```
 
 ### Test
 
 ```
-npm test
+pnpm test
 ```
 
 ## Notes

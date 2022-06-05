@@ -1,9 +1,13 @@
 {
+  "name": "sandbox",
   "private": true,
   "scripts": {
     "dev": "live-server ."
   },
   "devDependencies": {
     "live-server": "^1.2.1"
+  },
+  "dependencies": {
+    "semitone": "workspace:^0.2.1"
   }
 }
