@@ -3,23 +3,20 @@
   "version": "0.2.1",
   "license": "MIT",
   "type": "module",
-  "source": "src/semitone.ts",
-  "exports": "./dist/semitone.modern.js",
   "main": "./dist/semitone.cjs",
-  "module": "./dist/semitone.module.js",
-  "unpkg": "./dist/semitone.umd.js",
+  "module": "./dist/semitone.js",
   "types": "./dist/semitone.d.ts",
   "scripts": {
-    "build": "microbundle",
-    "dev": "microbundle watch",
+    "build": "tsup src/semitone.ts --format esm,cjs --dts --minify --sourcemap",
+    "dev": "tsup src/semitone --format esm,cjs --watch",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "prettier": "prettier --write .",
-    "setup-sandbox": "npm run build && cp ./dist/semitone.module.js ./sandbox/ && cp ./dist/semitone.module.js.map ./sandbox/"
+    "setup-sandbox": "npm run build && cp ./dist/semitone.js ./sandbox/ && cp ./dist/semitone.js.map ./sandbox/"
   },
   "devDependencies": {
-    "microbundle": "^0.13.3",
     "prettier": "^2.3.2",
+    "tsup": "^6.0.1",
     "typescript": "^4.4.2",
     "vitest": "^0.13.1"
   }

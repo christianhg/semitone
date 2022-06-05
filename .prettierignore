@@ -1,4 +1,4 @@
 dist
 package.json
 package-lock.json
-sandbox/semitone.module.js
+sandbox/semitone.js
