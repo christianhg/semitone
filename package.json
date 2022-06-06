@@ -12,6 +12,7 @@
     "dev": "turbo run dev --parallel",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "type-check:watch": "turbo run type-check:watch"
   },
