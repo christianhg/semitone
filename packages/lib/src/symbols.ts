@@ -16,7 +16,7 @@ export const symbols = {
   sixth: '6' as const,
 };
 
-export type NaturalNote = typeof symbols.naturalNotes[number];
+export type NaturalNote = (typeof symbols.naturalNotes)[number];
 export type Flat = typeof symbols.flat;
 export type Sharp = typeof symbols.sharp;
 export type Augmented = typeof symbols.augmented;

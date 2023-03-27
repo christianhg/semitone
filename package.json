@@ -16,9 +16,8 @@
     "type-check": "turbo run type-check",
     "type-check:watch": "turbo run type-check:watch"
   },
-  "packageManager": "pnpm@6.29.1",
   "devDependencies": {
-    "prettier": "^2.6.2",
-    "turbo": "^1.2.16"
+    "prettier": "^2.8.7",
+    "turbo": "^1.8.5"
   }
 }

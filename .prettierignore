@@ -1,3 +1,5 @@
+api/index.js
+build
 dist
 package.json
 package-lock.json

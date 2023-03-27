@@ -48,8 +48,8 @@ export const scaleNames = [
 ] as const;
 export const scaleAliases = ['major', 'natural-minor'] as const;
 
-type ScaleName = typeof scaleNames[number];
-type ScaleAlias = typeof scaleAliases[number];
+type ScaleName = (typeof scaleNames)[number];
+type ScaleAlias = (typeof scaleAliases)[number];
 
 const scaleAliasToName: Record<ScaleAlias, ScaleName> = {
   major: 'ionian',
